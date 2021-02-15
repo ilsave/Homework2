@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="landscapeRatio1">
+        0.25
+    </dimen>
+    <dimen name="landscapeRatio2">
+        0.66
+    </dimen>
+</resources>

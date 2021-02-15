@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomDropView">
+        <attr name="CircleColor" format="color" />
+        <attr name="BorderColor" format="color" />
+        <attr name="state" format="enum">
+            <enum name="focused" value="0" />
+            <enum name="pressed" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>
+
+
