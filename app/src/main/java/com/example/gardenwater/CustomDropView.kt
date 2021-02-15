@@ -8,7 +8,7 @@ import android.graphics.Path
 import android.util.AttributeSet
 
 
-class CustomDropView(context: Context, attributes: AttributeSet): androidx.appcompat.widget.AppCompatButton(context, attributes) {
+class CustomDropView(context: Context, attributes: AttributeSet): androidx.appcompat.widget.AppCompatTextView(context, attributes) {
 
     companion object {
         private const val DEFAULT_CIRCLE_COLOR = Color.YELLOW
@@ -24,7 +24,6 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
     private var circleColor = DEFAULT_CIRCLE_COLOR
     private var borderColor = DEFAULT_BORDER_COLOR
     private var borderWidth = DEFAULT_BORDER_WIDTH
-    private val mouthPath = Path()
     private var size = 320
 
     public var focusedState = FOCUSED
@@ -51,15 +50,15 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
     }
 
     override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
         drawCirle(canvas)
+        super.onDraw(canvas)
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
         //для отступов внутри самой вьюшки, будет обращена именно к тексту
-        //setPadding((measuredWidth - size / 2f).toInt(), (size / 2f).toInt(), 0, 0)
+        setPadding((measuredWidth* 0.75).toInt(), 0 , 0, 0)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

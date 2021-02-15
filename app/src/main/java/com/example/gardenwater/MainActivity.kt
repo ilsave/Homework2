@@ -65,13 +65,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-//       binding.buttonNumber.setOnClickListener {
-//            MyDialog().show(supportFragmentManager, "hey")
-//           binding.buttonNumber.text = (3 - binding.buttonNumber.text.toString().toInt()).toString()
-//        }
-
-
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = AdapterWeather(

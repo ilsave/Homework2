@@ -129,9 +129,8 @@
         app:BorderColor="@color/blue"
         app:CircleColor="@color/red"
         app:layout_constraintEnd_toEndOf="@+id/ivHose"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@id/guideline1"
-        app:layout_constraintStart_toStartOf="@+id/ivHose"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"
         app:state="focused" />
 
