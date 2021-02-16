@@ -14,6 +14,10 @@ import com.example.gardenwater.api.model.CurrentWeatherForecast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTemperetureValue: TextView
     private lateinit var tvHumidity: TextView
 
-    private lateinit var thread: Thread
+    private lateinit var threadPoolExecutor: ThreadPoolExecutor
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -78,6 +82,17 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        threadPoolExecutor = ThreadPoolExecutor(
+            3,
+            10,
+            5000,
+            TimeUnit.MILLISECONDS,
+            LinkedBlockingQueue()
+        )
+
+        threadPoolExecutor.submit(Runnable {
+
+        })
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
