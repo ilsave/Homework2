@@ -91,8 +91,53 @@ class MainActivity : AppCompatActivity() {
         )
 
         threadPoolExecutor.submit(Runnable {
+            val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
+            runOnUiThread {
+                tvTemperetureValue.text = String.format(
+                    resources
+                        .getString(R.string.temp_value),
+                    currentWeatherForecast?.weather?.temp.toString()
+                )
+                tvHumidity.text = String.format(
+                    resources
+                        .getString(R.string.humidity_value),
+                    currentWeatherForecast?.weather?.temp.toString()
+                )
+            }
 
-        })
+            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+            Log.d("MainActivityWeather", listWeather.toString())
+            for ((index, item) in listWeather!!.withIndex()) {
+                var url = item.weatherImage[0].getIconUrl()
+
+                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+                var myBitmap = BitmapFactory.decodeStream(stream)
+                listWeather[index].imageBitmap = myBitmap
+            }
+
+
+            for (item in listWeather!!) {
+
+                Log.d("MainActivty", item.getDate().toString())
+            }
+
+            val url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
+
+            val stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
+
+            val myBitmap = BitmapFactory.decodeStream(stream)
+
+
+            Log.d("MainActivity", stream.toString())
+
+            runOnUiThread {
+                imHose.setImageBitmap(myBitmap)
+                recyclerView.adapter = AdapterWeather(listWeather)
+                (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+            }
+        }
+        )
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -109,13 +154,13 @@ class MainActivity : AppCompatActivity() {
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
         recyclerViewAreas.layoutManager = LinearLayoutManager(this)
         recyclerViewAreas.adapter = AdapterAreas(
-                listOf(
-                        Area("BackYard", false),
-                        Area("BackPatio", false),
-                        Area("Front Yard", false),
-                        Area("Garden", false),
-                        Area("Porch", false)
-                )
+            listOf(
+                Area("BackYard", false),
+                Area("BackPatio", false),
+                Area("Front Yard", false),
+                Area("Garden", false),
+                Area("Porch", false)
+            )
         )
         (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
 
@@ -133,17 +178,23 @@ class MainActivity : AppCompatActivity() {
                     tag = "hoseOff"
                     contentDescription = "Sprinkler is off"
                     recyclerViewAreas.adapter = AdapterAreas(
-                            listOf(
-                                    Area("BackYard", false),
-                                    Area("BackPatio", false),
-                                    Area("Front Yard", false),
-                                    Area("Garden", false),
-                                    Area("Porch", false)
-                            )
+                        listOf(
+                            Area("BackYard", false),
+                            Area("BackPatio", false),
+                            Area("Front Yard", false),
+                            Area("Garden", false),
+                            Area("Porch", false)
+                        )
                     )
                     (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
                 }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        threadPoolExecutor.shutdown()
+    }
+
 }
