@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GardenWater</string>
+    <string name="temp_value">%1$s°</string>
+    <string name="humidity_value">%1$s %%</string>
 </resources>

@@ -58,7 +58,7 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
         super.onAttachedToWindow()
 
         //для отступов внутри самой вьюшки, будет обращена именно к тексту
-        setPadding((measuredWidth* 0.75).toInt(), 0 , 0, 0)
+       // setPadding((measuredWidth* 0.75).toInt(), 0 , 0, 0)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -72,9 +72,11 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
 
     fun drawCirle(canvas: Canvas?){
         paint.style = Paint.Style.FILL
+
+        //changing the color of circle
         if (focusedState == FOCUSED){
             paint.color = Color.RED
-        }else{
+        }else if (focusedState == PRESSED){
             paint.color = Color.BLUE
         }
         val radius = size / 2f

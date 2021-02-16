@@ -4,40 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:background="#63ADD0"
+    android:orientation="horizontal"
     tools:context=".MainActivity">
 
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:importantForAccessibility="no"
-            android:overScrollMode="never"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivHose"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.35"
         android:layout_height="250dp"
         android:contentDescription="watering"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toEndOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.35"
         app:srcCompat="@drawable/sprinkler_on" />
 
     <TextView
         android:id="@+id/tvTempTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temp"
         android:contentDescription="Temperature title"
+        android:text="Temp"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/ivHose"
         app:layout_constraintTop_toBottomOf="@+id/ivHose" />
@@ -72,65 +70,66 @@
         app:layout_constraintStart_toStartOf="@+id/tvHumidityTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvHumidityTitle" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/ivDrops"-->
-<!--        android:layout_width="200dp"-->
-<!--        android:layout_height="156dp"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/ivHose"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/ivHose"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"-->
-<!--        app:srcCompat="@drawable/icon_water" />-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/ivDrops"-->
+    <!--        android:layout_width="200dp"-->
+    <!--        android:layout_height="156dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/ivHose"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/ivHose"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"-->
+    <!--        app:srcCompat="@drawable/icon_water" />-->
 
-<!--    <Button-->
-<!--        android:id="@+id/buttonNumber"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="30dp"-->
-<!--        android:text="1"-->
-<!--        android:button = "@null"-->
-<!--        android:padding="0dp"-->
-<!--        android:background="@drawable/button_pressed_custom"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/ivDrops"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"-->
-<!--        />-->
+    <!--    <Button-->
+    <!--        android:id="@+id/buttonNumber"-->
+    <!--        android:layout_width="50dp"-->
+    <!--        android:layout_height="30dp"-->
+    <!--        android:text="1"-->
+    <!--        android:button = "@null"-->
+    <!--        android:padding="0dp"-->
+    <!--        android:background="@drawable/button_pressed_custom"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/ivDrops"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"-->
+    <!--        />-->
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.66"/>
+        app:layout_constraintGuide_percent="0.66" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25"/>
+        app:layout_constraintGuide_percent="0.25" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAreas"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:importantForAccessibility="no"
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAccessibility="no"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.gardenwater.CustomDropView
         android:id="@+id/ilsaveCircle"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
+        android:paddingLeft="155dp"
         android:text="1"
         android:textColor="@color/black"
         android:textSize="45sp"
         app:BorderColor="@color/blue"
         app:CircleColor="@color/red"
         app:layout_constraintEnd_toEndOf="@+id/ivHose"
-        app:layout_constraintStart_toEndOf="@id/guideline1"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@id/guideline1"
         app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"
         app:state="focused" />
 

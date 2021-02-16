@@ -1,15 +1,19 @@
 package com.example.gardenwater
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gardenwater.api.RetrofitClient
+import com.example.gardenwater.api.model.CurrentWeatherForecast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +28,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerViewAreas: RecyclerView
 
     private lateinit var imHose: ImageView
+
+    private lateinit var tvTemperetureValue: TextView
+    private lateinit var tvHumidity: TextView
+
+    private lateinit var thread: Thread
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -46,6 +55,12 @@ class MainActivity : AppCompatActivity() {
         ilsaveCircle = findViewById(R.id.ilsaveCircle)
         guideline1 = findViewById(R.id.guideline1)
         guideline2 = findViewById(R.id.guideline2)
+        tvTemperetureValue = findViewById(R.id.tvTemperatureValue)
+        tvHumidity = findViewById(R.id.tvHumidityValue)
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -53,7 +68,6 @@ class MainActivity : AppCompatActivity() {
                 ilsaveCircle.focusedState = CustomDropView.PRESSED
                 ilsaveCircle.text = "2"
                 ilsaveCircle.tag = "pressed"
-
             } else {
                 ilsaveCircle.focusedState = CustomDropView.FOCUSED
                 ilsaveCircle.text = "1"
@@ -67,14 +81,14 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = AdapterWeather(
-                listOf(
-                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-                        Weather("February 10, 2020", 27, R.drawable.rain)
-                )
-        )
-        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+        //recyclerView.adapter = AdapterWeather(
+//                listOf(
+//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
+//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
+//                        Weather("February 10, 2020", 27, R.drawable.rain)
+//                )
+//        )
+//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
