@@ -130,5 +130,90 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        thread = Thread(Runnable {
+            if (!thread.isInterrupted) {
+                RetrofitClient.getCurrentWeather()
+                    .enqueue(object : Callback<CurrentWeatherForecast> {
+                        override fun onResponse(
+                            call: Call<CurrentWeatherForecast>,
+                            response: Response<CurrentWeatherForecast>
+                        ) {
+                            if (response.isSuccessful) {
+                                Log.d("MainActivity", response.body().toString())
+                                runOnUiThread {
+                                    tvTemperetureValue.text = String.format(
+                                        resources
+                                            .getString(R.string.temp_value),
+                                        response.body()?.weather?.temp.toString()
+                                    )
+                                    tvHumidity.text = String.format(
+                                        resources
+                                            .getString(R.string.humidity_value),
+                                        response.body()?.weather?.temp.toString()
+                                    )
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<CurrentWeatherForecast>, t: Throwable) {
+                            Log.d("MainActivity", t.stackTrace.toString())
+                        }
+                    })
+                val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
+                runOnUiThread {
+                    tvTemperetureValue.text = String.format(
+                        resources
+                            .getString(R.string.temp_value),
+                        currentWeatherForecast?.weather?.temp.toString()
+                    )
+                    tvHumidity.text = String.format(
+                        resources
+                            .getString(R.string.humidity_value),
+                        currentWeatherForecast?.weather?.temp.toString()
+                    )
+                }
+
+                var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+                Log.d("MainActivityWeather", listWeather.toString())
+                for ((index, item) in listWeather!!.withIndex()) {
+                    var url = item.weatherImage[0].getIconUrl()
+
+                    var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+                    var myBitmap = BitmapFactory.decodeStream(stream)
+                    listWeather[index].imageBitmap = myBitmap
+                }
+
+
+                for (item in listWeather!!) {
+
+                    Log.d("MainActivty", item.getDate().toString())
+                }
+
+                var url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
+
+                var stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
+
+                var myBitmap = BitmapFactory.decodeStream(stream)
+
+
+                Log.d("MainActivity", stream.toString())
+
+                runOnUiThread {
+                    imHose.setImageBitmap(myBitmap)
+                    recyclerView.adapter = AdapterWeather(listWeather)
+                    (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+                }
+            }
+        })
+        thread.start()
+
+
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        thread.interrupt()
     }
 }
