@@ -64,7 +64,7 @@ open class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-
+        AsyncMyRequests().execute()
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -137,13 +137,56 @@ open class MainActivity : AppCompatActivity() {
     }
 
     inner class AsyncMyRequests : AsyncTask<Unit, Unit, Unit>() {
-            override fun onPreExecute() {
-                super.onPreExecute()
-                progressbar?.visibility = View.VISIBLE
-            }
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressbar?.visibility = View.VISIBLE
+        }
 
         override fun doInBackground(vararg params: Unit?) {
+            val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
+            runOnUiThread {
+                tvTemperetureValue.text = String.format(
+                    resources
+                        .getString(R.string.temp_value),
+                    currentWeatherForecast?.weather?.temp.toString()
+                )
+                tvHumidity.text = String.format(
+                    resources
+                        .getString(R.string.humidity_value),
+                    currentWeatherForecast?.weather?.humidity.toString()
+                )
+            }
 
+            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+            Log.d("MainActivityWeather", listWeather.toString())
+            for ((index, item) in listWeather!!.withIndex()) {
+                var url = item.weatherImage[0].getIconUrl()
+
+                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+                var myBitmap = BitmapFactory.decodeStream(stream)
+                listWeather[index].imageBitmap = myBitmap
+            }
+
+
+            for (item in listWeather!!) {
+
+                Log.d("MainActivty", item.getDate().toString())
+            }
+
+            var url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
+
+            var stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
+
+            var myBitmap = BitmapFactory.decodeStream(stream)
+
+
+            Log.d("MainActivity", stream.toString())
+
+            runOnUiThread {
+                recyclerView.adapter = AdapterWeather(listWeather)
+                (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+            }
             return Unit
         }
 
@@ -151,7 +194,6 @@ open class MainActivity : AppCompatActivity() {
             super.onPostExecute(result)
             progressbar?.visibility = View.INVISIBLE
         }
-
-      }
+    }
 
 }
