@@ -2,9 +2,11 @@ package com.example.gardenwater
 
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +17,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
 
     //  private lateinit var binding: ActivityMainBinding
 
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var thread: Thread
 
+    var progressbar: ProgressBar? = null
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         Log.d("MainActivity", newConfig.orientation.toString())
@@ -51,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         //binding = ActivityMainBinding.inflate(layoutInflater)
         //val view = binding.root
         setContentView(R.layout.activity_main)
-
+        progressbar = findViewById(R.id.progressBar)
         ilsaveCircle = findViewById(R.id.ilsaveCircle)
         guideline1 = findViewById(R.id.guideline1)
         guideline2 = findViewById(R.id.guideline2)
@@ -94,13 +98,13 @@ class MainActivity : AppCompatActivity() {
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
         recyclerViewAreas.layoutManager = LinearLayoutManager(this)
         recyclerViewAreas.adapter = AdapterAreas(
-                listOf(
-                        Area("BackYard", false),
-                        Area("BackPatio", false),
-                        Area("Front Yard", false),
-                        Area("Garden", false),
-                        Area("Porch", false)
-                )
+            listOf(
+                Area("BackYard", false),
+                Area("BackPatio", false),
+                Area("Front Yard", false),
+                Area("Garden", false),
+                Area("Porch", false)
+            )
         )
         (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
 
@@ -118,17 +122,36 @@ class MainActivity : AppCompatActivity() {
                     tag = "hoseOff"
                     contentDescription = "Sprinkler is off"
                     recyclerViewAreas.adapter = AdapterAreas(
-                            listOf(
-                                    Area("BackYard", false),
-                                    Area("BackPatio", false),
-                                    Area("Front Yard", false),
-                                    Area("Garden", false),
-                                    Area("Porch", false)
-                            )
+                        listOf(
+                            Area("BackYard", false),
+                            Area("BackPatio", false),
+                            Area("Front Yard", false),
+                            Area("Garden", false),
+                            Area("Porch", false)
+                        )
                     )
                     (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
                 }
             }
         }
     }
+
+    inner class AsyncMyRequests : AsyncTask<Unit, Unit, Unit>() {
+            override fun onPreExecute() {
+                super.onPreExecute()
+                progressbar?.visibility = View.VISIBLE
+            }
+
+        override fun doInBackground(vararg params: Unit?) {
+
+            return Unit
+        }
+
+        override fun onPostExecute(result: Unit?) {
+            super.onPostExecute(result)
+            progressbar?.visibility = View.INVISIBLE
+        }
+
+      }
+
 }
