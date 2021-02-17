@@ -8,9 +8,11 @@ import com.example.gardenwater.api.model.DailyForecast
 import com.example.gardenwater.api.model.WeatherForecast
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import retrofit2.awaitResponse
+import io.reactivex.rxjava3.schedulers.Schedulers
+
 
 class ViewModelGarden: ViewModel() {
-    private val mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
+    private var mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
     val weatherForecast: LiveData<List<DailyForecast>> = mWeatherDailyForecast
 
     private val mCompositeDisposable = CompositeDisposable()
@@ -20,8 +22,10 @@ class ViewModelGarden: ViewModel() {
         mCompositeDisposable.add(
         RetrofitClient
             .getWeatherForecast()
-            .subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
-            .subscribe(mWeatherDailyForecast::setValue)
+            .subscribeOn(Schedulers.io())
+            .subscribe({info ->
+                mWeatherDailyForecast = info.daily
+            })
         )
     }
 
