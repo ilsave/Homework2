@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHumidity: TextView
 
     private lateinit var thread: Thread
+    private lateinit var mhandler: Handler
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -59,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidityValue)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        mhandler = Handler()
 
 
 
@@ -89,6 +92,16 @@ class MainActivity : AppCompatActivity() {
 //                )
 //        )
 //        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+
+        thread = Thread(Runnable {
+
+
+
+            mhandler.post(Runnable {
+
+            })
+        })
+        thread.start()
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
