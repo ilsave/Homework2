@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
+import com.example.gardenwater.api.model.DailyForecast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,6 +64,9 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidityValue)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        val weatherForecastLoader = WeatherForecastLoaderCallbacks()
+        loaderManager
+            .initLoader(0, Bundle(), weatherForecastLoader)
 
 
 
@@ -135,38 +139,51 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<CurrentWeatherForecast> {
+    init class WeatherLoader: AsyncTaskLoader<List<DailyForecast>>(){
 
-
-        override fun onCreateLoader(id: Int, args: Bundle?): Loader<CurrentWeatherForecast> {
-            return WeatherForecastLoader(applicationContext)
-        }
-
-        override fun onLoadFinished(loader: Loader<CurrentWeatherForecast>?, data: CurrentWeatherForecast?) {
-        }
-
-        override fun onLoaderReset(loader: android.content.Loader<CurrentWeatherForecast>?) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onLoadFinished(
-            loader: android.content.Loader<CurrentWeatherForecast>?,
-            data: CurrentWeatherForecast?
-        ) {
+        override fun loadInBackground(): List<DailyForecast> {
             TODO("Not yet implemented")
         }
     }
+//
+//    inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<List<DailyForecast>> {
+//        override fun onCreateLoader(
+//            id: Int,
+//            args: Bundle?
+//        ): android.content.Loader<List<DailyForecast>> {
+//            return WeatherForecastLoader(applicationContext)
+//        }
+//
+//        override fun onLoadFinished(
+//            loader: android.content.Loader<List<DailyForecast>>?,
+//            data: List<DailyForecast>?
+//        ) {
+//            recyclerView.adapter = AdapterWeather(data!!)
+//            (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+//        }
+//
+//        override fun onLoaderReset(loader: android.content.Loader<List<DailyForecast>>?) {
+//            TODO("Not yet implemented")
+//        }
+//
+//
+//    }
 }
-
-class WeatherForecastLoader(context: Context) : AsyncTaskLoader<CurrentWeatherForecast>(context) {
-
-    override fun loadInBackground(): CurrentWeatherForecast {
-        try {
-            Thread.sleep(5000)
-        } catch (e: InterruptedException) {
-            return CurrentWeatherForecast("", 0F, "")
-        }
-
-        return CurrentWeatherForecast("Saint-Petersburg", 20F, "Sunny")
-    }
-}
+//
+//class WeatherForecastLoader(context: Context) : AsyncTaskLoader<List<DailyForecast>>(context) {
+//
+//    override fun loadInBackground(): List<DailyForecast> {
+//            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+//            Log.d("MainActivityWeather", listWeather.toString())
+//            for ((index, item) in listWeather!!.withIndex()) {
+//                var url = item.weatherImage[0].getIconUrl()
+//
+//                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+//
+//                var myBitmap = BitmapFactory.decodeStream(stream)
+//                listWeather[index].imageBitmap = myBitmap
+//            }
+//
+//        return listWeather
+//    }
+//}
