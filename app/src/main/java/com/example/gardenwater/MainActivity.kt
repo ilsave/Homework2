@@ -64,9 +64,10 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidityValue)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
         val weatherForecastLoader = WeatherForecastLoaderCallbacks()
-        loaderManager
-            .initLoader(1, Bundle(), weatherForecastLoader)
+        supportLoaderManager.initLoader(1, Bundle(), weatherForecastLoader)
+
         Thread(Runnable {
             WeatherLoader(this).loadInBackground()
         }).start()
