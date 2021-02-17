@@ -1,5 +1,6 @@
 package com.example.gardenwater
 
+import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,7 +26,14 @@ class ViewModelGarden: ViewModel() {
             .getWeatherForecast()
             .subscribeOn(Schedulers.io())
             .subscribe { info ->
+                for ((index, item) in info.daily!!.withIndex()) {
+                    var url = item.weatherImage[0].getIconUrl()
 
+                    var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+                    var myBitmap = BitmapFactory.decodeStream(stream)
+                    info.daily[index].imageBitmap = myBitmap
+                }
 
                 mWeatherDailyForecast.postValue(info.daily)
             }
