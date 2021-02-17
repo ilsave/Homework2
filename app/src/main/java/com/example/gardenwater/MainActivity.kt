@@ -95,11 +95,49 @@ class MainActivity : AppCompatActivity() {
 
         thread = Thread(Runnable {
 
+            val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
 
+            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+            Log.d("MainActivityWeather", listWeather.toString())
+            for ((index, item) in listWeather!!.withIndex()) {
+                var url = item.weatherImage[0].getIconUrl()
+
+                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+                var myBitmap = BitmapFactory.decodeStream(stream)
+                listWeather[index].imageBitmap = myBitmap
+            }
+
+
+            for (item in listWeather!!) {
+
+                Log.d("MainActivty", item.getDate().toString())
+            }
+
+            var url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
+
+            var stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
+
+            var myBitmap = BitmapFactory.decodeStream(stream)
+
+
+            Log.d("MainActivity", stream.toString())
 
             mhandler.post(Runnable {
-
+                tvTemperetureValue.text = String.format(
+                    resources
+                        .getString(R.string.temp_value),
+                    currentWeatherForecast?.weather?.temp.toString()
+                )
+                tvHumidity.text = String.format(
+                    resources
+                        .getString(R.string.humidity_value),
+                    currentWeatherForecast?.weather?.humidity.toString()
+                )
+                recyclerView.adapter = AdapterWeather(listWeather)
+                (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
             })
+
         })
         thread.start()
 
