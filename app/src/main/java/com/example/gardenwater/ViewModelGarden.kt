@@ -12,22 +12,29 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 class ViewModelGarden: ViewModel() {
-    private var mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
+    var mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
     val weatherForecast: LiveData<List<DailyForecast>> = mWeatherDailyForecast
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    public fun getMList() = mWeatherDailyForecast
 
     init {
         mCompositeDisposable.add(
         RetrofitClient
             .getWeatherForecast()
             .subscribeOn(Schedulers.io())
-            .subscribe({info ->
-                mWeatherDailyForecast = info.daily
-            })
+            .subscribe { info ->
+
+
+                mWeatherDailyForecast.postValue(info.daily)
+            }
         )
+
+
     }
+
+
 
     override fun onCleared() {
         super.onCleared()
