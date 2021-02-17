@@ -27,11 +27,11 @@ class ViewModelGarden: ViewModel() {
             .subscribeOn(Schedulers.io())
             .subscribe { info ->
                 for ((index, item) in info.daily!!.withIndex()) {
-                    var url = item.weatherImage[0].getIconUrl()
+                    val url = item.weatherImage[0].getIconUrl()
 
-                    var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                    val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
 
-                    var myBitmap = BitmapFactory.decodeStream(stream)
+                    val myBitmap = BitmapFactory.decodeStream(stream)
                     info.daily[index].imageBitmap = myBitmap
                 }
 
