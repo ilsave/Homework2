@@ -1,5 +1,8 @@
 package com.example.gardenwater
 
+import android.app.LoaderManager
+import android.content.AsyncTaskLoader
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
+import androidx.loader.content.Loader
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
@@ -130,5 +134,39 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<CurrentWeatherForecast> {
+
+
+        override fun onCreateLoader(id: Int, args: Bundle?): Loader<CurrentWeatherForecast> {
+            return WeatherForecastLoader(applicationContext)
+        }
+
+        override fun onLoadFinished(loader: Loader<CurrentWeatherForecast>?, data: CurrentWeatherForecast?) {
+        }
+
+        override fun onLoaderReset(loader: android.content.Loader<CurrentWeatherForecast>?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onLoadFinished(
+            loader: android.content.Loader<CurrentWeatherForecast>?,
+            data: CurrentWeatherForecast?
+        ) {
+            TODO("Not yet implemented")
+        }
+    }
+}
+
+class WeatherForecastLoader(context: Context) : AsyncTaskLoader<CurrentWeatherForecast>(context) {
+
+    override fun loadInBackground(): CurrentWeatherForecast {
+        try {
+            Thread.sleep(5000)
+        } catch (e: InterruptedException) {
+            return CurrentWeatherForecast("", 0F, "")
+        }
+
+        return CurrentWeatherForecast("Saint-Petersburg", 20F, "Sunny")
     }
 }
