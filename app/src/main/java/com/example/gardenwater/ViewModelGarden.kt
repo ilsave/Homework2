@@ -17,8 +17,17 @@ class ViewModelGarden: ViewModel() {
 
 
     init {
-        RetrofitClient.getCurrentWeather()
-            .subscribe()
+        mCompositeDisposable.add(
+        RetrofitClient
+            .getWeatherForecast()
+            .subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
+            .subscribe(mWeatherDailyForecast::setValue)
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mCompositeDisposable.clear()
     }
 
 }

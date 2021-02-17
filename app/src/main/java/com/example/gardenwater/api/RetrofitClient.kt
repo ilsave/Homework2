@@ -8,6 +8,7 @@ import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 private const val BASE_URL = "https://api.openweathermap.org"
@@ -26,6 +27,7 @@ object RetrofitClient {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
