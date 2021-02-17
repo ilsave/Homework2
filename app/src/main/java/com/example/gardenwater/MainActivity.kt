@@ -38,6 +38,8 @@ open class MainActivity : AppCompatActivity() {
 
     var progressbar: ProgressBar? = null
 
+    var asyncTask: AsyncMyRequests? = null
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         Log.d("MainActivity", newConfig.orientation.toString())
@@ -64,7 +66,8 @@ open class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        AsyncMyRequests().execute()
+        asyncTask = AsyncMyRequests()
+        asyncTask!!.execute()
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -134,6 +137,11 @@ open class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        asyncTask!!.cancel(true)
     }
 
     inner class AsyncMyRequests : AsyncTask<Unit, Unit, Unit>() {
