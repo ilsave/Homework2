@@ -2,6 +2,7 @@ package com.example.gardenwater.api
 
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.WeatherForecast
+import io.reactivex.rxjava3.core.Single
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,11 +30,11 @@ object RetrofitClient {
             .build()
     }
 
-    fun getWeatherForecast(): Call<WeatherForecast> {
+    fun getWeatherForecast(): Single<WeatherForecast> {
         return api.getWeatherForecast()
     }
 
-    fun getCurrentWeather(): Call<CurrentWeatherForecast> {
+    fun getCurrentWeather(): Single<CurrentWeatherForecast> {
         return api.getCurrentWeatherForecast()
     }
 
