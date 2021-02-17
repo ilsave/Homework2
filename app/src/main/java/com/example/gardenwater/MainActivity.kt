@@ -66,11 +66,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val weatherForecastLoader = WeatherForecastLoaderCallbacks()
-        supportLoaderManager.initLoader(1, Bundle(), weatherForecastLoader)
+        loaderManager.initLoader(1, Bundle(), weatherForecastLoader).forceLoad()
 
-        Thread(Runnable {
-            WeatherLoader(this).loadInBackground()
-        }).start()
+//        Thread(Runnable {
+//            WeatherLoader(this).loadInBackground()
+//        }).start()
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
