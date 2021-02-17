@@ -15,6 +15,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+//homework - onstop - spot the thread
+
 class MainActivity : AppCompatActivity() {
 
     //  private lateinit var binding: ActivityMainBinding
@@ -173,34 +175,20 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
 
-                var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+                val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
                 Log.d("MainActivityWeather", listWeather.toString())
                 for ((index, item) in listWeather!!.withIndex()) {
-                    var url = item.weatherImage[0].getIconUrl()
+                    val url = item.weatherImage[0].getIconUrl()
 
-                    var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                    val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
 
-                    var myBitmap = BitmapFactory.decodeStream(stream)
+                    val myBitmap = BitmapFactory.decodeStream(stream)
                     listWeather[index].imageBitmap = myBitmap
                 }
 
 
-                for (item in listWeather!!) {
-
-                    Log.d("MainActivty", item.getDate().toString())
-                }
-
-                var url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
-
-                var stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
-
-                var myBitmap = BitmapFactory.decodeStream(stream)
-
-
-                Log.d("MainActivity", stream.toString())
 
                 runOnUiThread {
-                    imHose.setImageBitmap(myBitmap)
                     recyclerView.adapter = AdapterWeather(listWeather)
                     (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
                 }
@@ -211,6 +199,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
