@@ -89,7 +89,17 @@ class MainActivity : AppCompatActivity() {
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
 
+        weatherViewModel.mCurrentWeather.observe(this, Observer {
+            tvTemperetureValue.text = String.format(
+                resources
+                    .getString(R.string.temp_value),
+                it?.temp.toString())
 
+            tvHumidity.text = String.format(
+                        resources
+                            .getString(R.string.humidity_value),
+                it.humidity.toString())
+        })
 
 
         recyclerView = findViewById(R.id.recyclerView)
