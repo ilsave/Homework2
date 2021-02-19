@@ -40,6 +40,7 @@ open class MainActivity : AppCompatActivity() {
     var progressbar: ProgressBar? = null
 
     var asyncTaskCurrentWeather: AsyncMyRequestsCurrentWeather? = null
+    var asyncTaskCurrentWeatherList: AsyncMyRequestsCurrentWeatherList? = null
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -68,7 +69,11 @@ open class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         asyncTaskCurrentWeather = AsyncMyRequestsCurrentWeather(this)
+        asyncTaskCurrentWeatherList = AsyncMyRequestsCurrentWeatherList(this)
         asyncTaskCurrentWeather!!.execute()
+        asyncTaskCurrentWeatherList!!.execute()
+
+
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
