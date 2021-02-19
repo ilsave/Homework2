@@ -38,5 +38,5 @@ interface RetrofitService {
     ): Response<CurrentWeatherForecast>
 
     @GET
-    fun getWeatherImage(@Url imageUrl: String): Call<ResponseBody>
+    suspend fun getWeatherImage(@Url imageUrl: String): Response<ResponseBody>
 }

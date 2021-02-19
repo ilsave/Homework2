@@ -40,7 +40,7 @@ object RetrofitClient {
         return api.getCurrentWeatherForecast()
     }
 
-    fun getImage(imageCode: String): Call<ResponseBody> {
+    suspend fun getImage(imageCode: String): Response<ResponseBody> {
         return api.getWeatherImage(imageCode)
     }
 }

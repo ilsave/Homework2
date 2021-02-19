@@ -18,8 +18,6 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
     var mCurrentWeather: MutableLiveData<CurrentWeather> = MutableLiveData()
     val currentWeather: LiveData<CurrentWeather> = mCurrentWeather
 
-    private val mCompositeDisposable = CompositeDisposable()
-
     public fun getMList() = mWeatherDailyForecast
 
     init {
@@ -34,15 +32,13 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
             response.body()?.let {
                 for ((index, item) in it.daily.withIndex()) {
                     val url = item.weatherImage[0].getIconUrl()
-
-                  //  val stream = async(Dispatchers.Default) {
-                 //   coroutineScope(Dispatchers.IO) {  }
-                  //  withContext(Dispatchers.Default){
-                        val stream = repository.getImageUrl(url).execute().body()?.byteStream()
-                   // }
-                    //}
-                    val myBitmap = BitmapFactory.decodeStream(stream)
-                    it.daily[index].imageBitmap = myBitmap
+                    val stream = repository.getImageUrl(url)
+                    if (stream.isSuccessful){
+                        stream.body()?.let {
+                            val myBitmap = BitmapFactory.decodeStream(it.byteStream())
+                            item.imageBitmap = myBitmap
+                        }
+                    }
                 }
                 mWeatherDailyForecast.postValue(it.daily)
             }
@@ -55,11 +51,4 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
             response.body()?.let { mCurrentWeather.value = it.weather }
         }
     }
-
-
-    override fun onCleared() {
-        super.onCleared()
-        mCompositeDisposable.clear()
-    }
-
 }
