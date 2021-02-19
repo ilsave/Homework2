@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.Guideline
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
+import com.example.gardenwater.api.model.DailyForecastCustom
 
 class MainActivity : AppCompatActivity() {
 
@@ -77,23 +78,9 @@ class MainActivity : AppCompatActivity() {
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
 
-
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
-
         threadList = Thread(Runnable {
 
             val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
-
             mhandler.post(Runnable {
                 tvTemperetureValue.text = String.format(
                     resources
@@ -111,18 +98,19 @@ class MainActivity : AppCompatActivity() {
         threadList.start()
 
         threadCurrent = Thread(Runnable {
+            val listHelper = ArrayList<DailyForecastCustom>()
             val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-            Log.d("MainActivityWeather", listWeather.toString())
             for ((index, item) in listWeather!!.withIndex()) {
+                listHelper.add(DailyForecastCustom(null, null))
+                listHelper[index].dailyForecast = item
                 val url = item.weatherImage[0].getIconUrl()
-
                 val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
                 val myBitmap = BitmapFactory.decodeStream(stream)
-                listWeather[index].imageBitmap = myBitmap
+                listHelper[index].bitmap = myBitmap
             }
+
             mhandler.post(Runnable {
-                recyclerView.adapter = AdapterWeather(listWeather)
+                recyclerView.adapter = AdapterWeather(listHelper)
                 (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
             })
         })
@@ -132,13 +120,13 @@ class MainActivity : AppCompatActivity() {
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
         recyclerViewAreas.layoutManager = LinearLayoutManager(this)
         recyclerViewAreas.adapter = AdapterAreas(
-                listOf(
-                        Area("BackYard", false),
-                        Area("BackPatio", false),
-                        Area("Front Yard", false),
-                        Area("Garden", false),
-                        Area("Porch", false)
-                )
+            listOf(
+                Area("BackYard", false),
+                Area("BackPatio", false),
+                Area("Front Yard", false),
+                Area("Garden", false),
+                Area("Porch", false)
+            )
         )
         (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
 
@@ -156,13 +144,13 @@ class MainActivity : AppCompatActivity() {
                     tag = "hoseOff"
                     contentDescription = "Sprinkler is off"
                     recyclerViewAreas.adapter = AdapterAreas(
-                            listOf(
-                                    Area("BackYard", false),
-                                    Area("BackPatio", false),
-                                    Area("Front Yard", false),
-                                    Area("Garden", false),
-                                    Area("Porch", false)
-                            )
+                        listOf(
+                            Area("BackYard", false),
+                            Area("BackPatio", false),
+                            Area("Front Yard", false),
+                            Area("Garden", false),
+                            Area("Porch", false)
+                        )
                     )
                     (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
                 }
