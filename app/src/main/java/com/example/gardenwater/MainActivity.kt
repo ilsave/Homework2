@@ -1,7 +1,9 @@
 package com.example.gardenwater
 
+import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
+import android.graphics.MaskFilter
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,9 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.gardenwater.api.model.DailyForecast
+import java.lang.ref.WeakReference
 
 open class MainActivity : AppCompatActivity() {
 
@@ -26,19 +27,19 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var guideline1: Guideline
     private lateinit var guideline2: Guideline
 
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAreas: RecyclerView
 
     private lateinit var imHose: ImageView
 
-    private lateinit var tvTemperetureValue: TextView
-    private lateinit var tvHumidity: TextView
+    lateinit var tvTemperetureValue: TextView
+    lateinit var tvHumidity: TextView
 
     private lateinit var thread: Thread
 
     var progressbar: ProgressBar? = null
 
-    var asyncTask: AsyncMyRequests? = null
+    var asyncTaskCurrentWeather: AsyncMyRequestsCurrentWeather? = null
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -66,8 +67,8 @@ open class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        asyncTask = AsyncMyRequests()
-        asyncTask!!.execute()
+        asyncTaskCurrentWeather = AsyncMyRequestsCurrentWeather(this)
+        asyncTaskCurrentWeather!!.execute()
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -141,67 +142,85 @@ open class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        asyncTask!!.cancel(true)
+        asyncTaskCurrentWeather!!.cancel(true)
     }
 
-    inner class AsyncMyRequests : AsyncTask<Unit, Unit, Unit>() {
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressbar?.visibility = View.VISIBLE
-        }
+    fun setProgressbar(){
+        progressbar?.visibility = View.VISIBLE
+    }
+}
 
-        override fun doInBackground(vararg params: Unit?) {
-            val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
-            runOnUiThread {
-                tvTemperetureValue.text = String.format(
-                    resources
-                        .getString(R.string.temp_value),
-                    currentWeatherForecast?.weather?.temp.toString()
-                )
-                tvHumidity.text = String.format(
-                    resources
-                        .getString(R.string.humidity_value),
-                    currentWeatherForecast?.weather?.humidity.toString()
-                )
-            }
+class AsyncMyRequestsCurrentWeather(val activity: MainActivity) : AsyncTask<Unit, Unit, CurrentWeatherForecast>() {
 
-            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-            Log.d("MainActivityWeather", listWeather.toString())
-            for ((index, item) in listWeather!!.withIndex()) {
-                var url = item.weatherImage[0].getIconUrl()
+    val weakReference: WeakReference<MainActivity> = WeakReference(activity)
+    private var weakActivity: MainActivity
 
-                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+    init {
+        weakActivity = weakReference.get()!!
+    }
 
-                var myBitmap = BitmapFactory.decodeStream(stream)
-                listWeather[index].imageBitmap = myBitmap
-            }
+    override fun onPreExecute() {
+        super.onPreExecute()
+        weakActivity.progressbar?.visibility = View.VISIBLE
+    }
+
+    override fun doInBackground(vararg params: Unit?): CurrentWeatherForecast
+         = RetrofitClient.getCurrentWeather().execute().body()!!
 
 
-            for (item in listWeather!!) {
-
-                Log.d("MainActivty", item.getDate().toString())
-            }
-
-            var url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
-
-            var stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
-
-            var myBitmap = BitmapFactory.decodeStream(stream)
-
-
-            Log.d("MainActivity", stream.toString())
-
-            runOnUiThread {
-                recyclerView.adapter = AdapterWeather(listWeather)
-                (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
-            }
-            return Unit
-        }
-
-        override fun onPostExecute(result: Unit?) {
-            super.onPostExecute(result)
+    override fun onPostExecute(result: CurrentWeatherForecast?) {
+        super.onPostExecute(result)
+        (weakActivity).apply {
+            tvTemperetureValue.text = String.format(
+                resources
+                    .getString(R.string.temp_value),
+                result?.weather?.temp.toString()
+            )
+            tvHumidity.text = String.format(
+                resources
+                    .getString(R.string.humidity_value),
+                result?.weather?.humidity.toString()
+            )
             progressbar?.visibility = View.INVISIBLE
         }
     }
-
 }
+
+
+class AsyncMyRequestsCurrentWeatherList(val activity: MainActivity) : AsyncTask<Unit, Unit, List<DailyForecast>>() {
+
+    val weakReference: WeakReference<MainActivity> = WeakReference(activity)
+    private var weakActivity: MainActivity
+
+    init {
+        weakActivity = weakReference.get()!!
+    }
+
+    override fun onPreExecute() {
+        super.onPreExecute()
+        weakActivity.progressbar?.visibility = View.VISIBLE
+    }
+
+    override fun doInBackground(vararg params: Unit?): List<DailyForecast> {
+        val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+        Log.d("MainActivityWeather", listWeather.toString())
+        for ((index, item) in listWeather!!.withIndex()) {
+            val url = item.weatherImage[0].getIconUrl()
+
+            val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+
+            val myBitmap = BitmapFactory.decodeStream(stream)
+            listWeather[index].imageBitmap = myBitmap
+        }
+        return listWeather
+    }
+
+    override fun onPostExecute(result: List<DailyForecast>?) {
+        super.onPostExecute(result)
+        with(weakActivity){
+            recyclerView.adapter = result?.let { AdapterWeather(it) }
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
+    }
+}
+
