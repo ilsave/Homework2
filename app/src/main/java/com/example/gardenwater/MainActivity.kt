@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
         var weatherViewModel = ViewModelProvider(this, ViewModelFactory()).get(ViewModelGarden::class.java)
 
-        weatherViewModel.mWeatherDailyForecast.observe(this, Observer {
+        weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
             recyclerView.adapter = AdapterWeather(it)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
@@ -100,18 +100,6 @@ class MainActivity : AppCompatActivity() {
                             .getString(R.string.humidity_value),
                 it.humidity.toString())
         })
-
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)

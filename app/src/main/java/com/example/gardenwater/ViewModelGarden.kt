@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeather
 import com.example.gardenwater.api.model.DailyForecast
+import com.example.gardenwater.api.model.DailyForecastCustom
 import com.example.gardenwater.api.model.WeatherForecast
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import retrofit2.awaitResponse
@@ -17,14 +18,13 @@ class ViewModelGarden : ViewModel() {
     var mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
     val weatherForecast: LiveData<List<DailyForecast>> = mWeatherDailyForecast
 
-
     var mCurrentWeather: MutableLiveData<CurrentWeather> = MutableLiveData()
     val currentWeather: LiveData<CurrentWeather> = mCurrentWeather
 
+    var mWeatherForecastCustom: MutableLiveData<List<DailyForecastCustom>> = MutableLiveData()
+    val weatherForecastCustom: LiveData<List<DailyForecastCustom>> = mWeatherForecastCustom
 
     private val mCompositeDisposable = CompositeDisposable()
-
-    public fun getMList() = mWeatherDailyForecast
 
     init {
         mCompositeDisposable.add(
@@ -32,15 +32,16 @@ class ViewModelGarden : ViewModel() {
                 .getWeatherForecast()
                 .subscribeOn(Schedulers.io())
                 .subscribe { info ->
+                    val listHelper = ArrayList<DailyForecastCustom>()
                     for ((index, item) in info.daily!!.withIndex()) {
+                        listHelper.add(DailyForecastCustom(null, null))
+                        listHelper[index].dailyForecast = item
                         val url = item.weatherImage[0].getIconUrl()
-
                         val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
                         val myBitmap = BitmapFactory.decodeStream(stream)
-                        info.daily[index].imageBitmap = myBitmap
+                        listHelper[index].bitmap = myBitmap
                     }
-                    mWeatherDailyForecast.postValue(info.daily)
+                    mWeatherForecastCustom.postValue(listHelper)
                 }
         )
 
