@@ -1,4 +1,4 @@
-package com.example.gardenwater
+package com.example.gardenwater.repositories
 
 import com.example.gardenwater.api.RetrofitClient
 import kotlinx.coroutines.Dispatchers

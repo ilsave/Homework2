@@ -1,11 +1,11 @@
-package com.example.gardenwater
+package com.example.gardenwater.ui
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
 import android.util.AttributeSet
+import com.example.gardenwater.R
 
 
 class CustomDropView(context: Context, attributes: AttributeSet): androidx.appcompat.widget.AppCompatTextView(context, attributes) {
@@ -21,12 +21,16 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
 
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var circleColor = DEFAULT_CIRCLE_COLOR
-    private var borderColor = DEFAULT_BORDER_COLOR
-    private var borderWidth = DEFAULT_BORDER_WIDTH
+    private var circleColor =
+        DEFAULT_CIRCLE_COLOR
+    private var borderColor =
+        DEFAULT_BORDER_COLOR
+    private var borderWidth =
+        DEFAULT_BORDER_WIDTH
     private var size = 320
 
-    public var focusedState = FOCUSED
+    public var focusedState =
+        FOCUSED
         set(state) {
             field = state
             invalidate()
@@ -38,13 +42,19 @@ class CustomDropView(context: Context, attributes: AttributeSet): androidx.appco
     }
 
     private fun setupAttributes(attrs: AttributeSet?) {
-        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.CustomDropView,
+        val typedArray = context.theme.obtainStyledAttributes(attrs,
+            R.styleable.CustomDropView,
                 0, 0)
 
         focusedState = typedArray.getInt(R.styleable.CustomDropView_state, FOCUSED.toInt()).toLong()
-        circleColor = typedArray.getColor(R.styleable.CustomDropView_CircleColor, DEFAULT_BORDER_COLOR)
-        borderColor = typedArray.getColor(R.styleable.CustomDropView_BorderColor,
-                DEFAULT_BORDER_COLOR)
+        circleColor = typedArray.getColor(
+            R.styleable.CustomDropView_CircleColor,
+            DEFAULT_BORDER_COLOR
+        )
+        borderColor = typedArray.getColor(
+            R.styleable.CustomDropView_BorderColor,
+            DEFAULT_BORDER_COLOR
+        )
 
         typedArray.recycle()
     }

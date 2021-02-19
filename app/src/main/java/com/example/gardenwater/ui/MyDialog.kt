@@ -1,9 +1,10 @@
-package com.example.gardenwater
+package com.example.gardenwater.ui
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import com.example.gardenwater.R
 
 class MyDialog: DialogFragment() {
 

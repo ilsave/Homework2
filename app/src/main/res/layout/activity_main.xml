@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#63ADD0"
     android:orientation="horizontal"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -118,7 +118,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.gardenwater.CustomDropView
+    <com.example.gardenwater.ui.CustomDropView
         android:id="@+id/ilsaveCircle"
         android:layout_width="200dp"
         android:layout_height="200dp"

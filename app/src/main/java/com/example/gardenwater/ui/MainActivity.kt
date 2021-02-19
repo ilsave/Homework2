@@ -1,7 +1,6 @@
-package com.example.gardenwater
+package com.example.gardenwater.ui
 
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -13,11 +12,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gardenwater.api.RetrofitClient
-import com.example.gardenwater.api.model.CurrentWeatherForecast
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.gardenwater.*
+import com.example.gardenwater.api.model.Area
+import com.example.gardenwater.repositories.Repository
+import com.example.gardenwater.ui.adapters.AdapterAreas
+import com.example.gardenwater.ui.adapters.AdapterWeather
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,11 +71,13 @@ class MainActivity : AppCompatActivity() {
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
                 Log.d("MainActivity", "you tapped on my view!")
-                ilsaveCircle.focusedState = CustomDropView.PRESSED
+                ilsaveCircle.focusedState =
+                    CustomDropView.PRESSED
                 ilsaveCircle.text = "2"
                 ilsaveCircle.tag = "pressed"
             } else {
-                ilsaveCircle.focusedState = CustomDropView.FOCUSED
+                ilsaveCircle.focusedState =
+                    CustomDropView.FOCUSED
                 ilsaveCircle.text = "1"
                 ilsaveCircle.tag = "focused"
             }
@@ -85,11 +86,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         val repository = Repository()
-        val weatherViewModel = ViewModelProvider(this, ViewModelFactory(repository)).get(ViewModelGarden::class.java)
+        val weatherViewModel = ViewModelProvider(this,
+            ViewModelFactory(repository)
+        ).get(ViewModelGarden::class.java)
 
         weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
             progressBar.visibility = View.INVISIBLE
-            recyclerView.adapter = AdapterWeather(it)
+            recyclerView.adapter =
+                AdapterWeather(it)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
 
@@ -105,15 +109,16 @@ class MainActivity : AppCompatActivity() {
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
         recyclerViewAreas.layoutManager = LinearLayoutManager(this)
-        recyclerViewAreas.adapter = AdapterAreas(
+        recyclerViewAreas.adapter =
+            AdapterAreas(
                 listOf(
-                        Area("BackYard", false),
-                        Area("BackPatio", false),
-                        Area("Front Yard", false),
-                        Area("Garden", false),
-                        Area("Porch", false)
+                    Area("BackYard", false),
+                    Area("BackPatio", false),
+                    Area("Front Yard", false),
+                    Area("Garden", false),
+                    Area("Porch", false)
                 )
-        )
+            )
         (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
 
         imHose = findViewById(R.id.ivHose)
@@ -129,15 +134,31 @@ class MainActivity : AppCompatActivity() {
                     setImageResource(R.drawable.sprinkler_off)
                     tag = "hoseOff"
                     contentDescription = "Sprinkler is off"
-                    recyclerViewAreas.adapter = AdapterAreas(
+                    recyclerViewAreas.adapter =
+                        AdapterAreas(
                             listOf(
-                                    Area("BackYard", false),
-                                    Area("BackPatio", false),
-                                    Area("Front Yard", false),
-                                    Area("Garden", false),
-                                    Area("Porch", false)
+                                Area(
+                                    "BackYard",
+                                    false
+                                ),
+                                Area(
+                                    "BackPatio",
+                                    false
+                                ),
+                                Area(
+                                    "Front Yard",
+                                    false
+                                ),
+                                Area(
+                                    "Garden",
+                                    false
+                                ),
+                                Area(
+                                    "Porch",
+                                    false
+                                )
                             )
-                    )
+                        )
                     (recyclerViewAreas.adapter as AdapterAreas).notifyDataSetChanged()
                 }
             }

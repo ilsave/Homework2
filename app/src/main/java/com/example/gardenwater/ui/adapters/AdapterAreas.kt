@@ -1,4 +1,4 @@
-package com.example.gardenwater
+package com.example.gardenwater.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,8 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gardenwater.R
+import com.example.gardenwater.api.model.Area
 
 class AdapterAreas(
     var listAreas: List<Area>
@@ -30,7 +32,9 @@ class AdapterAreas(
             if(position % 2 == 0){
                 holder.itemView.findViewById<CheckBox>(R.id.checkBoxRightArea).isChecked = true
                 findViewById<TextView>(R.id.tvAreaTitle).setTextColor(
-                    ContextCompat.getColor(context,R.color.blue))
+                    ContextCompat.getColor(context,
+                        R.color.blue
+                    ))
             }
             if(position == listAreas.size-1){
                 findViewById<TextView>(R.id.tvSeparator).visibility = View.GONE
