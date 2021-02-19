@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity() {
             tvHumidity.text = it.humidity.toString()
             tvTemperetureValue.text = it.temp.toString()
         })
+
+        weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
+            Log.d("MainActivity", it.toString())
+        })
+
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         //recyclerView.adapter = AdapterWeather(
