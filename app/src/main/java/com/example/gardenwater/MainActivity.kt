@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.MaskFilter
+import android.nfc.Tag
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.DailyForecast
+import com.example.gardenwater.api.model.DailyForecastCustom
+import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -27,6 +30,7 @@ open class MainActivity : AppCompatActivity() {
         val CORE_POOL_SIZE = 3
         val MAXIMUM_POOL_SIZE = 10
         val KEEP_ALIVE_TIME = 5000L
+        val TAG = "MainActivity"
     }
 
     //  private lateinit var binding: ActivityMainBinding
@@ -108,18 +112,6 @@ open class MainActivity : AppCompatActivity() {
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
 
-
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
@@ -212,7 +204,7 @@ class AsyncMyRequestsCurrentWeather(val activity: MainActivity) : AsyncTask<Unit
 }
 
 
-class AsyncMyRequestsCurrentWeatherList(val activity: MainActivity) : AsyncTask<Unit, Unit, List<DailyForecast>>() {
+class AsyncMyRequestsCurrentWeatherList(val activity: MainActivity) : AsyncTask<Unit, Unit, List<DailyForecastCustom>>() {
 
     val weakReference: WeakReference<MainActivity> = WeakReference(activity)
     private var weakActivity: MainActivity
@@ -226,21 +218,26 @@ class AsyncMyRequestsCurrentWeatherList(val activity: MainActivity) : AsyncTask<
         weakActivity.progressbar?.visibility = View.VISIBLE
     }
 
-    override fun doInBackground(vararg params: Unit?): List<DailyForecast> {
-        val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-        Log.d("MainActivityWeather", listWeather.toString())
-        for ((index, item) in listWeather!!.withIndex()) {
-            val url = item.weatherImage[0].getIconUrl()
+    override fun doInBackground(vararg params: Unit?): List<DailyForecastCustom> {
+        val listHelper = ArrayList<DailyForecastCustom>()
+        try {
+            val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
 
-            val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
-            val myBitmap = BitmapFactory.decodeStream(stream)
-            listWeather[index].imageBitmap = myBitmap
+            for ((index, item) in listWeather!!.withIndex()) {
+                listHelper.add(DailyForecastCustom(null, null))
+                listHelper[index].dailyForecast = item
+                val url = item.weatherImage[0].getIconUrl()
+                val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                val myBitmap = BitmapFactory.decodeStream(stream)
+                listHelper[index].bitmap = myBitmap
+            }
+        }catch (e: Exception){
+            Log.d("MainActivity", e.toString() )
         }
-        return listWeather
+        return listHelper
     }
 
-    override fun onPostExecute(result: List<DailyForecast>?) {
+    override fun onPostExecute(result: List<DailyForecastCustom>?) {
         super.onPostExecute(result)
         with(weakActivity){
             recyclerView.adapter = result?.let { AdapterWeather(it) }
