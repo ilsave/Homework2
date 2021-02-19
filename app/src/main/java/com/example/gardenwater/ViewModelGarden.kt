@@ -20,6 +20,7 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
 
     public fun getMList() = mWeatherDailyForecast
 
+
     init {
         getWeatherForecast()
         getCurrentWeather()
