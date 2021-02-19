@@ -82,16 +82,18 @@ class MainActivity : AppCompatActivity() {
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
 
-        var weatherViewModel = ViewModelProvider(this, ViewModelFactory()).get(ViewModelGarden::class.java)
+        val repository = Repository()
+        val weatherViewModel = ViewModelProvider(this, ViewModelFactory(repository)).get(ViewModelGarden::class.java)
 
         weatherViewModel.mWeatherDailyForecast.observe(this, Observer {
             recyclerView.adapter = AdapterWeather(it)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
 
-
-
-
+        weatherViewModel.mCurrentWeather.observe(this, Observer {
+            tvHumidity.text = it.humidity.toString()
+            tvTemperetureValue.text = it.temp.toString()
+        })
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         //recyclerView.adapter = AdapterWeather(

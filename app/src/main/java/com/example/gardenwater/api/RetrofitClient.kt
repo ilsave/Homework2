@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,16 +28,15 @@ object RetrofitClient {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    fun getWeatherForecast(): Single<WeatherForecast> {
+    suspend fun getWeatherForecast(): Response<WeatherForecast> {
         return api.getWeatherForecast()
     }
 
-    fun getCurrentWeather(): Single<CurrentWeatherForecast> {
+    suspend fun getCurrentWeather(): Response<CurrentWeatherForecast> {
         return api.getCurrentWeatherForecast()
     }
 

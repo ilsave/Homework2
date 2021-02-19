@@ -4,44 +4,57 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.gardenwater.api.RetrofitClient
+import androidx.lifecycle.viewModelScope
+import com.example.gardenwater.api.model.CurrentWeather
 import com.example.gardenwater.api.model.DailyForecast
-import com.example.gardenwater.api.model.WeatherForecast
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import retrofit2.awaitResponse
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.*
 
 
-class ViewModelGarden: ViewModel() {
+class ViewModelGarden(val repository: Repository): ViewModel() {
     var mWeatherDailyForecast: MutableLiveData<List<DailyForecast>> = MutableLiveData()
     val weatherForecast: LiveData<List<DailyForecast>> = mWeatherDailyForecast
+
+    var mCurrentWeather: MutableLiveData<CurrentWeather> = MutableLiveData()
+    val currentWeather: LiveData<CurrentWeather> = mCurrentWeather
 
     private val mCompositeDisposable = CompositeDisposable()
 
     public fun getMList() = mWeatherDailyForecast
 
     init {
-        mCompositeDisposable.add(
-        RetrofitClient
-            .getWeatherForecast()
-            .subscribeOn(Schedulers.io())
-            .subscribe { info ->
-                for ((index, item) in info.daily!!.withIndex()) {
-                    val url = item.weatherImage[0].getIconUrl()
-
-                    val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
-                    val myBitmap = BitmapFactory.decodeStream(stream)
-                    info.daily[index].imageBitmap = myBitmap
-                }
-
-                mWeatherDailyForecast.postValue(info.daily)
-            }
-        )
-
-
+        getWeatherForecast()
+        getCurrentWeather()
     }
 
+
+    private fun getWeatherForecast() = viewModelScope.launch {
+        val response = repository.getWeatherForecast()
+        if(response.isSuccessful){
+            response.body()?.let {
+                for ((index, item) in it.daily.withIndex()) {
+                    val url = item.weatherImage[0].getIconUrl()
+
+                  //  val stream = async(Dispatchers.Default) {
+                 //   coroutineScope(Dispatchers.IO) {  }
+                  //  withContext(Dispatchers.Default){
+                        val stream = repository.getImageUrl(url).execute().body()?.byteStream()
+                   // }
+                    //}
+                    val myBitmap = BitmapFactory.decodeStream(stream)
+                    it.daily[index].imageBitmap = myBitmap
+                }
+                mWeatherDailyForecast.postValue(it.daily)
+            }
+        }
+    }
+
+    private fun getCurrentWeather() = viewModelScope.launch {
+        val response = repository.getCurrentWeather()
+        if (response.isSuccessful){
+            response.body()?.let { mCurrentWeather.value = it.weather }
+        }
+    }
 
 
     override fun onCleared() {
