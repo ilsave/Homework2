@@ -16,8 +16,10 @@
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline1"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/ivHose"
@@ -56,7 +58,7 @@
         android:id="@+id/tvTemperatureValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="24°"
+        android:text="Receiving data..."
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/ivHose"
         app:layout_constraintTop_toBottomOf="@+id/tvTempTitle" />
@@ -65,7 +67,7 @@
         android:id="@+id/tvHumidityValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="73%"
+        android:text=""
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/tvHumidityTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvHumidityTitle" />
@@ -133,12 +135,12 @@
         app:layout_constraintTop_toBottomOf="@+id/tvHumidityValue"
         app:state="focused" />
 
+
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressBar2"
         style="?android:attr/progressBarStyle"
-        android:layout_width="34dp"
-        android:layout_height="45dp"
-        android:visibility="gone"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

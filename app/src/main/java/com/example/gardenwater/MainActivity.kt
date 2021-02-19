@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
 import androidx.lifecycle.Observer
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTemperetureValue: TextView
     private lateinit var tvHumidity: TextView
 
+    private lateinit var progressBar: ProgressBar
+
     private lateinit var thread: Thread
 
     private lateinit var WeatherViewModel: ViewModel
@@ -64,8 +67,7 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidityValue)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-
+        progressBar = findViewById(R.id.progressBar2)
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -85,30 +87,20 @@ class MainActivity : AppCompatActivity() {
         val repository = Repository()
         val weatherViewModel = ViewModelProvider(this, ViewModelFactory(repository)).get(ViewModelGarden::class.java)
 
-        weatherViewModel.mWeatherDailyForecast.observe(this, Observer {
+        weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
+            progressBar.visibility = View.INVISIBLE
             recyclerView.adapter = AdapterWeather(it)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
 
         weatherViewModel.mCurrentWeather.observe(this, Observer {
-            tvHumidity.text = it.humidity.toString()
-            tvTemperetureValue.text = it.temp.toString()
-        })
+            tvHumidity.text =
+            String.format(resources.getString(R.string.humidity_value), it?.humidity?.toString())
 
-        weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
-            Log.d("MainActivity", it.toString())
-        })
+            tvTemperetureValue.text =
+            String.format(resources.getString(R.string.temp_value), it?.temp?.toString())
 
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+        })
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)

@@ -27,18 +27,19 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
 
 
     init {
-        getWeatherForecast()
         getCurrentWeather()
         getWeatherForecastCustom()
     }
 
     private fun getWeatherForecastCustom() = viewModelScope.launch {
+
         try {
             var listHelper = ArrayList<DailyForecastCustom>()
             val response = repository.getWeatherForecast()
             if(response.isSuccessful){
                 response.body()?.let {
                     for ((index, item) in it.daily.withIndex()) {
+                        listHelper.add(DailyForecastCustom(null, null))
                         listHelper[index].dailyForecast = item
                         val url = item.weatherImage[0].getIconUrl()
                         val stream = repository.getImageUrl(url)

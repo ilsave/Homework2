@@ -7,10 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.model.DailyForecast
+import com.example.gardenwater.api.model.DailyForecastCustom
 import org.w3c.dom.Text
 
 class AdapterWeather(
-        var itemList: List<DailyForecast>
+        var itemList: List<DailyForecastCustom>
 ): RecyclerView.Adapter<AdapterWeather.ItemsHolder>() {
 
 
@@ -28,11 +29,11 @@ class AdapterWeather(
         holder.itemView.apply {
 
             findViewById<TextView>(R.id.tvTemperature).text =
-                String.format(resources.getString(R.string.temp_value), curItem.temp.day.toString())
+                String.format(resources.getString(R.string.temp_value), curItem.dailyForecast?.temp?.day.toString())
 
-            findViewById<ImageView>(R.id.imvWeatherPic).setImageBitmap(curItem.imageBitmap)
+            findViewById<ImageView>(R.id.imvWeatherPic).setImageBitmap(curItem.bitmap)
 
-            findViewById<TextView>(R.id.tvWeatherDate).text = curItem.getDate()
+            findViewById<TextView>(R.id.tvWeatherDate).text = curItem.dailyForecast?.getDate()
         }
     }
 }
