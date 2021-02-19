@@ -34,7 +34,7 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
     private fun getWeatherForecastCustom() = viewModelScope.launch {
 
         try {
-            var listHelper = ArrayList<DailyForecastCustom>()
+            val listHelper = ArrayList<DailyForecastCustom>()
             val response = repository.getWeatherForecast()
             if(response.isSuccessful){
                 response.body()?.let {
@@ -79,9 +79,14 @@ class ViewModelGarden(val repository: Repository): ViewModel() {
     }
 
     private fun getCurrentWeather() = viewModelScope.launch {
-        val response = repository.getCurrentWeather()
-        if (response.isSuccessful){
-            response.body()?.let { mCurrentWeather.value = it.weather }
+        try{
+            val response = repository.getCurrentWeather()
+            if (response.isSuccessful){
+                response.body()?.let { mCurrentWeather.value = it.weather }
+            }
+        } catch (e: Exception){
+            Log.d("ViewModel", e.toString())
         }
+
     }
 }
