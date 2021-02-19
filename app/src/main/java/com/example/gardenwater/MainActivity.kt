@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
+import com.example.gardenwater.api.model.DailyForecast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-//homework - onstop - spot the thread
+// here i tried to implement 2 way of work with threads^ (inner implementation and separated class)
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHumidity: TextView
 
     private lateinit var thread: Thread
+    private lateinit var myThread: MyThread
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -194,15 +196,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        thread.start()
+       // thread.start()
 
-
-
+        myThread = MyThread(this)
+        myThread.start()
     }
+
+    override fun onStop() {
+        super.onStop()
+        thread.stop()
+        myThread.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        thread.resume()
+        myThread.resume()
+    }
+
+    fun updateUi(tvTemp: String, tvHum: String, list: List<DailyForecast>){
+        runOnUiThread {
+            tvTemperetureValue.text = tvTemp
+            tvHumidity.text = tvHum
+            recyclerView.adapter = AdapterWeather(list)
+            (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+        }
+    }
+
 
 
     override fun onDestroy() {
         super.onDestroy()
         thread.interrupt()
+        myThread.interrupt()
     }
 }
