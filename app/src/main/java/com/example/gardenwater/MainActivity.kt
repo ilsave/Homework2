@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.DailyForecast
+import com.example.gardenwater.api.model.DailyForecastCustom
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -133,46 +134,47 @@ class MainActivity : AppCompatActivity() {
 
 
     //just the other way
-    inner class WeatherLoader(context: Context) : AsyncTaskLoader<List<DailyForecast>>(context){
+    inner class WeatherLoader(context: Context) : AsyncTaskLoader<List<DailyForecastCustom>>(context){
 
-        override fun loadInBackground(): List<DailyForecast> {
+        override fun loadInBackground(): List<DailyForecastCustom> {
             val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-            Log.d("MainActivityWeather", listWeather.toString())
+            val listHelper = ArrayList<DailyForecastCustom>()
+
             for ((index, item) in listWeather!!.withIndex()) {
+                listHelper.add(DailyForecastCustom(null, null))
+                listHelper[index].dailyForecast = item
                 val url = item.weatherImage[0].getIconUrl()
-
                 val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
                 val myBitmap = BitmapFactory.decodeStream(stream)
-                listWeather[index].imageBitmap = myBitmap
+                listHelper[index].bitmap = myBitmap
             }
 
             runOnUiThread {
-                recyclerView.adapter = AdapterWeather(listWeather)
+                recyclerView.adapter = AdapterWeather(listHelper)
                 (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
             }
 
-            return listWeather
+            return listHelper
         }
     }
 
-    inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<List<DailyForecast>> {
+    inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<List<DailyForecastCustom>> {
         override fun onCreateLoader(
             id: Int,
             args: Bundle?
-        ): android.content.Loader<List<DailyForecast>> {
+        ): android.content.Loader<List<DailyForecastCustom>> {
             return WeatherForecastLoader(applicationContext)
         }
 
         override fun onLoadFinished(
-            loader: android.content.Loader<List<DailyForecast>>?,
-            data: List<DailyForecast>?
+            loader: android.content.Loader<List<DailyForecastCustom>>?,
+            data: List<DailyForecastCustom>?
         ) {
             recyclerView.adapter = AdapterWeather(data!!)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         }
 
-        override fun onLoaderReset(loader: android.content.Loader<List<DailyForecast>>?) {
+        override fun onLoaderReset(loader: android.content.Loader<List<DailyForecastCustom>>?) {
             TODO("Not yet implemented")
         }
 
@@ -180,20 +182,21 @@ class MainActivity : AppCompatActivity() {
     }
 }
 //
-class WeatherForecastLoader(context: Context) : AsyncTaskLoader<List<DailyForecast>>(context) {
+class WeatherForecastLoader(context: Context) : AsyncTaskLoader<List<DailyForecastCustom>>(context) {
 
-    override fun loadInBackground(): List<DailyForecast> {
+    override fun loadInBackground(): List<DailyForecastCustom> {
             var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-            Log.d("MainActivityWeather", listWeather.toString())
-            for ((index, item) in listWeather!!.withIndex()) {
-                val url = item.weatherImage[0].getIconUrl()
+        val listHelper = ArrayList<DailyForecastCustom>()
 
-                val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+        for ((index, item) in listWeather!!.withIndex()) {
+            listHelper.add(DailyForecastCustom(null, null))
+            listHelper[index].dailyForecast = item
+            val url = item.weatherImage[0].getIconUrl()
+            val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+            val myBitmap = BitmapFactory.decodeStream(stream)
+            listHelper[index].bitmap = myBitmap
+        }
 
-                val myBitmap = BitmapFactory.decodeStream(stream)
-                listWeather[index].imageBitmap = myBitmap
-            }
-
-        return listWeather
+        return listHelper
     }
 }
