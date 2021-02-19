@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.DailyForecastCustom
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var threadList: Thread
     private lateinit var threadCurrent: Thread
     private lateinit var mhandler: Handler
+    private val TAG = "MainActivity"
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -60,8 +62,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         mhandler = Handler()
-
-
 
         ilsaveCircle.setOnClickListener {
             if (ilsaveCircle.tag != null && ilsaveCircle.tag == "focused") {
@@ -98,21 +98,25 @@ class MainActivity : AppCompatActivity() {
         threadList.start()
 
         threadCurrent = Thread(Runnable {
-            val listHelper = ArrayList<DailyForecastCustom>()
-            val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-            for ((index, item) in listWeather!!.withIndex()) {
-                listHelper.add(DailyForecastCustom(null, null))
-                listHelper[index].dailyForecast = item
-                val url = item.weatherImage[0].getIconUrl()
-                val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-                val myBitmap = BitmapFactory.decodeStream(stream)
-                listHelper[index].bitmap = myBitmap
-            }
+            try {
+                val listHelper = ArrayList<DailyForecastCustom>()
+                val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+                for ((index, item) in listWeather!!.withIndex()) {
+                    listHelper.add(DailyForecastCustom(null, null))
+                    listHelper[index].dailyForecast = item
+                    val url = item.weatherImage[0].getIconUrl()
+                    val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                    val myBitmap = BitmapFactory.decodeStream(stream)
+                    listHelper[index].bitmap = myBitmap
+                }
 
-            mhandler.post(Runnable {
-                recyclerView.adapter = AdapterWeather(listHelper)
-                (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
-            })
+                mhandler.post(Runnable {
+                    recyclerView.adapter = AdapterWeather(listHelper)
+                    (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+                })
+            } catch (e: Exception){
+                Log.d(TAG, e.toString())
+            }
         })
         threadCurrent.start()
 
