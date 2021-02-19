@@ -2,11 +2,14 @@ package com.example.gardenwater.api
 
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.WeatherForecast
+import io.reactivex.rxjava3.core.Single
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 private const val BASE_URL = "https://api.openweathermap.org"
@@ -29,15 +32,15 @@ object RetrofitClient {
             .build()
     }
 
-    fun getWeatherForecast(): Call<WeatherForecast> {
+    suspend fun getWeatherForecast(): Response<WeatherForecast> {
         return api.getWeatherForecast()
     }
 
-    fun getCurrentWeather(): Call<CurrentWeatherForecast> {
+    suspend fun getCurrentWeather(): Response<CurrentWeatherForecast> {
         return api.getCurrentWeatherForecast()
     }
 
-    fun getImage(imageCode: String): Call<ResponseBody> {
+    suspend fun getImage(imageCode: String): Response<ResponseBody> {
         return api.getWeatherImage(imageCode)
     }
 }

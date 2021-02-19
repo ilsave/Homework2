@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
@@ -33,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHumidity: TextView
 
     private lateinit var thread: Thread
+
+    private lateinit var WeatherViewModel: ViewModel
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -77,8 +82,18 @@ class MainActivity : AppCompatActivity() {
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
 
+        val repository = Repository()
+        val weatherViewModel = ViewModelProvider(this, ViewModelFactory(repository)).get(ViewModelGarden::class.java)
 
+        weatherViewModel.mWeatherDailyForecast.observe(this, Observer {
+            recyclerView.adapter = AdapterWeather(it)
+            (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+        })
 
+        weatherViewModel.mCurrentWeather.observe(this, Observer {
+            tvHumidity.text = it.humidity.toString()
+            tvTemperetureValue.text = it.temp.toString()
+        })
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         //recyclerView.adapter = AdapterWeather(
