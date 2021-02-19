@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.DailyForecast
+import com.example.gardenwater.api.model.DailyForecastCustom
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
+import java.lang.reflect.Executable
 
 // here i tried to implement 2 way of work with threads^ (inner implementation and separated class)
 
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var thread: Thread
     private lateinit var myThread: MyThread
+    private val TAG = "MainActivity"
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -82,19 +86,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
-
-
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
         recyclerViewAreas.layoutManager = LinearLayoutManager(this)
         recyclerViewAreas.adapter = AdapterAreas(
@@ -135,65 +126,73 @@ class MainActivity : AppCompatActivity() {
             }
         }
         thread = Thread(Runnable {
-            if (!thread.isInterrupted) {
-                RetrofitClient.getCurrentWeather()
-                    .enqueue(object : Callback<CurrentWeatherForecast> {
-                        override fun onResponse(
-                            call: Call<CurrentWeatherForecast>,
-                            response: Response<CurrentWeatherForecast>
-                        ) {
-                            if (response.isSuccessful) {
-                                Log.d("MainActivity", response.body().toString())
-                                runOnUiThread {
-                                    tvTemperetureValue.text = String.format(
-                                        resources
-                                            .getString(R.string.temp_value),
-                                        response.body()?.weather?.temp.toString()
-                                    )
-                                    tvHumidity.text = String.format(
-                                        resources
-                                            .getString(R.string.humidity_value),
-                                        response.body()?.weather?.temp.toString()
-                                    )
+            try {
+                if (!thread.isInterrupted) {
+                    RetrofitClient.getCurrentWeather()
+                        .enqueue(object : Callback<CurrentWeatherForecast> {
+                            override fun onResponse(
+                                call: Call<CurrentWeatherForecast>,
+                                response: Response<CurrentWeatherForecast>
+                            ) {
+                                if (response.isSuccessful) {
+                                    Log.d("MainActivity", response.body().toString())
+                                    runOnUiThread {
+                                        tvTemperetureValue.text = String.format(
+                                            resources
+                                                .getString(R.string.temp_value),
+                                            response.body()?.weather?.temp.toString()
+                                        )
+                                        tvHumidity.text = String.format(
+                                            resources
+                                                .getString(R.string.humidity_value),
+                                            response.body()?.weather?.temp.toString()
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        override fun onFailure(call: Call<CurrentWeatherForecast>, t: Throwable) {
-                            Log.d("MainActivity", t.stackTrace.toString())
-                        }
-                    })
-                val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
-                runOnUiThread {
-                    tvTemperetureValue.text = String.format(
-                        resources
-                            .getString(R.string.temp_value),
-                        currentWeatherForecast?.weather?.temp.toString()
-                    )
-                    tvHumidity.text = String.format(
-                        resources
-                            .getString(R.string.humidity_value),
-                        currentWeatherForecast?.weather?.temp.toString()
-                    )
+                            override fun onFailure(
+                                call: Call<CurrentWeatherForecast>,
+                                t: Throwable
+                            ) {
+                                Log.d("MainActivity", t.stackTrace.toString())
+                            }
+                        })
+                    val currentWeatherForecast = RetrofitClient.getCurrentWeather().execute().body()
+                    runOnUiThread {
+                        tvTemperetureValue.text = String.format(
+                            resources
+                                .getString(R.string.temp_value),
+                            currentWeatherForecast?.weather?.temp.toString()
+                        )
+                        tvHumidity.text = String.format(
+                            resources
+                                .getString(R.string.humidity_value),
+                            currentWeatherForecast?.weather?.temp.toString()
+                        )
+                    }
+
+                    val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+                    val listHelper = ArrayList<DailyForecastCustom>()
+
+                    for ((index, item) in listWeather!!.withIndex()) {
+                        listHelper.add(DailyForecastCustom(null, null))
+                        listHelper[index].dailyForecast = item
+                        val url = item.weatherImage[0].getIconUrl()
+                        val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                        val myBitmap = BitmapFactory.decodeStream(stream)
+                        listHelper[index].bitmap = myBitmap
+                    }
+
+
+
+                    runOnUiThread {
+                        recyclerView.adapter = AdapterWeather(listHelper)
+                        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
+                    }
                 }
-
-                val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
-                Log.d("MainActivityWeather", listWeather.toString())
-                for ((index, item) in listWeather!!.withIndex()) {
-                    val url = item.weatherImage[0].getIconUrl()
-
-                    val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
-
-                    val myBitmap = BitmapFactory.decodeStream(stream)
-                    listWeather[index].imageBitmap = myBitmap
-                }
-
-
-
-                runOnUiThread {
-                    recyclerView.adapter = AdapterWeather(listWeather)
-                    (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
-                }
+            }catch (e: Exception){
+                Log.d(TAG, e.toString())
             }
         })
        // thread.start()
@@ -214,7 +213,7 @@ class MainActivity : AppCompatActivity() {
         myThread.resume()
     }
 
-    fun updateUi(tvTemp: String, tvHum: String, list: List<DailyForecast>){
+    fun updateUi(tvTemp: String, tvHum: String, list: List<DailyForecastCustom>){
         runOnUiThread {
             tvTemperetureValue.text = tvTemp
             tvHumidity.text = tvHum

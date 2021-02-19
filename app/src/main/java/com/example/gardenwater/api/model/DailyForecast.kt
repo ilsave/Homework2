@@ -10,8 +10,7 @@ data class DailyForecast(
     val dt: Long,
     var temp: Temperature,
     @SerializedName("weather")
-    val weatherImage: List<WeatherImage>,
-    var imageBitmap: Bitmap? = null
+    val weatherImage: List<WeatherImage>
 ) {
     fun getDate(): String = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).run {
             format(Date(dt * 1000L).apply { timeZone = TimeZone.getTimeZone("Europe/Moscow") })
