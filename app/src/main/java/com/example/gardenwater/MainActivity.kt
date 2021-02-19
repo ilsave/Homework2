@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.Guideline
 import androidx.lifecycle.Observer
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHumidity: TextView
 
     private lateinit var thread: Thread
+    private lateinit var progressBar: ProgressBar
 
     private lateinit var WeatherViewModel: ViewModel
 
@@ -64,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidityValue)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        progressBar = findViewById(R.id.progressBar2)
 
 
 
@@ -82,9 +85,10 @@ class MainActivity : AppCompatActivity() {
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
 
-        var weatherViewModel = ViewModelProvider(this, ViewModelFactory()).get(ViewModelGarden::class.java)
+        val weatherViewModel = ViewModelProvider(this, ViewModelFactory()).get(ViewModelGarden::class.java)
 
         weatherViewModel.mWeatherForecastCustom.observe(this, Observer {
+            progressBar.visibility = View.INVISIBLE
             recyclerView.adapter = AdapterWeather(it)
             (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
         })
