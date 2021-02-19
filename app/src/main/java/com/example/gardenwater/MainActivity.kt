@@ -17,8 +17,17 @@ import com.example.gardenwater.api.RetrofitClient
 import com.example.gardenwater.api.model.CurrentWeatherForecast
 import com.example.gardenwater.api.model.DailyForecast
 import java.lang.ref.WeakReference
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 open class MainActivity : AppCompatActivity() {
+
+    companion object {
+        val CORE_POOL_SIZE = 3
+        val MAXIMUM_POOL_SIZE = 10
+        val KEEP_ALIVE_TIME = 5000L
+    }
 
     //  private lateinit var binding: ActivityMainBinding
 
@@ -41,6 +50,7 @@ open class MainActivity : AppCompatActivity() {
 
     var asyncTaskCurrentWeather: AsyncMyRequestsCurrentWeather? = null
     var asyncTaskCurrentWeatherList: AsyncMyRequestsCurrentWeatherList? = null
+    var threadPoolExecutor: ThreadPoolExecutor? = null
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -68,10 +78,18 @@ open class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        threadPoolExecutor = ThreadPoolExecutor(
+            CORE_POOL_SIZE,
+            MAXIMUM_POOL_SIZE,
+            KEEP_ALIVE_TIME,
+            TimeUnit.MILLISECONDS,
+            LinkedBlockingQueue()
+        )
+
         asyncTaskCurrentWeather = AsyncMyRequestsCurrentWeather(this)
         asyncTaskCurrentWeatherList = AsyncMyRequestsCurrentWeatherList(this)
-        asyncTaskCurrentWeather!!.execute()
-        asyncTaskCurrentWeatherList!!.execute()
+        asyncTaskCurrentWeather!!.executeOnExecutor(threadPoolExecutor)
+        asyncTaskCurrentWeatherList!!.executeOnExecutor(threadPoolExecutor)
 
 
 
@@ -148,6 +166,8 @@ open class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         asyncTaskCurrentWeather!!.cancel(true)
+        asyncTaskCurrentWeatherList!!.cancel(true)
+        threadPoolExecutor!!.shutdown()
     }
 
     fun setProgressbar(){
