@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var tvTemperetureValue: TextView
     private lateinit var tvHumidity: TextView
+    private lateinit var weatherForecastLoader: WeatherForecastLoaderCallbacks
 
     private lateinit var thread: Thread
 
@@ -65,9 +66,10 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val weatherForecastLoader = WeatherForecastLoaderCallbacks()
+        weatherForecastLoader = WeatherForecastLoaderCallbacks()
         loaderManager.initLoader(1, Bundle(), weatherForecastLoader).forceLoad()
 
+        //just the other way
 //        Thread(Runnable {
 //            WeatherLoader(this).loadInBackground()
 //        }).start()
@@ -86,19 +88,6 @@ class MainActivity : AppCompatActivity() {
             MyDialog().show(supportFragmentManager, "hey")
             ilsaveCircle.text = (3 - ilsaveCircle.text.toString().toInt()).toString()
         }
-
-
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        //recyclerView.adapter = AdapterWeather(
-//                listOf(
-//                        Weather("February 8, 2020", 25, R.drawable.cloudy),
-//                        Weather("February 9, 2020", 26, R.drawable.partly_cloudy),
-//                        Weather("February 10, 2020", 27, R.drawable.rain)
-//                )
-//        )
-//        (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
 
 
         recyclerViewAreas = findViewById(R.id.recyclerViewAreas)
@@ -141,17 +130,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    //just the other way
     inner class WeatherLoader(context: Context) : AsyncTaskLoader<List<DailyForecast>>(context){
 
         override fun loadInBackground(): List<DailyForecast> {
-            var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
+            val listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
             Log.d("MainActivityWeather", listWeather.toString())
             for ((index, item) in listWeather!!.withIndex()) {
-                var url = item.weatherImage[0].getIconUrl()
+                val url = item.weatherImage[0].getIconUrl()
 
-                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
 
-                var myBitmap = BitmapFactory.decodeStream(stream)
+                val myBitmap = BitmapFactory.decodeStream(stream)
                 listWeather[index].imageBitmap = myBitmap
             }
 
@@ -163,7 +155,7 @@ class MainActivity : AppCompatActivity() {
             return listWeather
         }
     }
-//
+
     inner class WeatherForecastLoaderCallbacks : LoaderManager.LoaderCallbacks<List<DailyForecast>> {
         override fun onCreateLoader(
             id: Int,
@@ -194,11 +186,11 @@ class WeatherForecastLoader(context: Context) : AsyncTaskLoader<List<DailyForeca
             var listWeather = RetrofitClient.getWeatherForecast().execute().body()?.daily
             Log.d("MainActivityWeather", listWeather.toString())
             for ((index, item) in listWeather!!.withIndex()) {
-                var url = item.weatherImage[0].getIconUrl()
+                val url = item.weatherImage[0].getIconUrl()
 
-                var stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
+                val stream = RetrofitClient.getImage(url).execute().body()?.byteStream()
 
-                var myBitmap = BitmapFactory.decodeStream(stream)
+                val myBitmap = BitmapFactory.decodeStream(stream)
                 listWeather[index].imageBitmap = myBitmap
             }
 
