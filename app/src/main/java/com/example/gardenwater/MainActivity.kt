@@ -21,6 +21,12 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        val CORE_POOL_SIZE = 3
+        val MAXIMUM_POOL_SIZE = 10
+        val KEEP_ALIVE_TIME = 5000L
+    }
+
     //  private lateinit var binding: ActivityMainBinding
 
     private lateinit var ilsaveCircle: CustomDropView
@@ -83,9 +89,9 @@ class MainActivity : AppCompatActivity() {
 
 
         threadPoolExecutor = ThreadPoolExecutor(
-            3,
-            10,
-            5000,
+            CORE_POOL_SIZE,
+            MAXIMUM_POOL_SIZE,
+            KEEP_ALIVE_TIME,
             TimeUnit.MILLISECONDS,
             LinkedBlockingQueue()
         )
@@ -117,22 +123,9 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            for (item in listWeather!!) {
 
-                Log.d("MainActivty", item.getDate().toString())
-            }
-
-            val url = currentWeatherForecast?.weatherImage?.get(0)?.getIconUrl()
-
-            val stream = RetrofitClient.getImage(url!!).execute().body()?.byteStream()
-
-            val myBitmap = BitmapFactory.decodeStream(stream)
-
-
-            Log.d("MainActivity", stream.toString())
 
             runOnUiThread {
-                imHose.setImageBitmap(myBitmap)
                 recyclerView.adapter = AdapterWeather(listWeather)
                 (recyclerView.adapter as AdapterWeather).notifyDataSetChanged()
             }
